@@ -1,0 +1,56 @@
+version: "3.8"
+networks:
+  dockercomposenet:
+    # Use bridge driver and enable IPv6
+    driver: bridge
+    driver_opts:
+      com.docker.network.enable_ipv6: "true"
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.25.0.0/24
+          gateway: 172.25.0.1
+        - subnet: "2001:3984:3989::/64"
+          gateway: "2001:3984:3989::1"
+
+services:
+  ubuntu:
+    image: ubuntu
+    container_name: ubuntu
+    command: sleep infinity
+    hostname: 'docknet1.com'
+    cap_add:
+      - NET_ADMIN
+    networks:
+       dockercomposenet:
+         ipv4_address: 172.25.0.20
+         ipv6_address: 2001:3984:3989::10
+    extra_hosts:
+       - "devnet1.com:172.25.0.20"
+  alpine:
+    image: alpine:latest
+    container_name: alpine
+    command: sleep infinity
+    hostname: 'docknet2.com'
+    cap_add:
+      - NET_ADMIN
+    networks:
+     dockercomposenet:
+       ipv4_address: 172.25.0.30
+    extra_hosts:
+     - "devnet2.com:172.25.0.30"
+    restart: always
+  centos:
+    image: centos:latest
+    container_name: centos
+    command: sleep infinity
+    hostname: 'docknet3.com'
+    cap_add:
+      - NET_ADMIN
+    networks:
+      dockercomposenet:
+        ipv4_address: 172.25.0.40
+    extra_hosts:
+      - "devnet3.com:172.25.0.40"
+    restart: always
+
